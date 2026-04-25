@@ -2,14 +2,35 @@
 
 A Claude Code plugin marketplace for skills extracted from real sessions.
 
+## Why this exists
+
+Each skill here started as a pattern that emerged during real work — extracted from the session it solved, refined through repeated use, then bundled when it proved itself. No theoretical patterns, no speculative best-practices, no AI-generated catalog padding.
+
+## Requirements
+
+[Claude Code](https://code.claude.com) installed and authenticated.
+
 ## Install via Claude Code
 
 ```
 /plugin marketplace add kurioscreative/skills
 /plugin install flow@kurioscreative-skills
+/reload-plugins
 ```
 
 After install, skills are namespaced as `/flow:agentic`, `/flow:shape`, `/flow:enhance`, `/flow:improve-skill`, `/flow:tighten`.
+
+Try it:
+
+```
+/flow:shape "I want to add OAuth login to my SaaS app"
+```
+
+To pull future updates:
+
+```
+/plugin marketplace update kurioscreative/skills
+```
 
 ## Or copy-paste a single skill
 
