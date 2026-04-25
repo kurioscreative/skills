@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Promote a skill from ~/.claude/skills or $PWD/.claude/skills into this repo.
+set -euo pipefail
+
+usage() {
+  cat <<EOF
+Usage: bin/promote-skill [-p] [-f] <skill-name>
+
+  -p   Source from project: \$PWD/.claude/skills/<name> (default: ~/.claude/skills/<name>)
+  -f   Overwrite if destination already exists in the repo
+  -h   Show this help
+
+Copies the skill directory into <repo>/skills/<name>/.
+EOF
+}
+
+scope="user"
+force=0
+while getopts ":pfh" opt; do
+  case "$opt" in
+    p) scope="project" ;;
+    f) force=1 ;;
+    h) usage; exit 0 ;;
+    \?) echo "unknown flag: -$OPTARG" >&2; usage; exit 2 ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [[ $# -ne 1 ]]; then
+  usage
+  exit 2
+fi
+name="$1"
+
+repo_root="$(cd "$(dirname "$0")/.." && pwd)"
+dest="$repo_root/skills/$name"
+
+if [[ "$scope" == "project" ]]; then
+  src="$PWD/.claude/skills/$name"
+else
+  src="$HOME/.claude/skills/$name"
+fi
+
+if [[ ! -d "$src" ]]; then
+  echo "source skill not found: $src" >&2
+  exit 1
+fi
+
+if [[ -e "$dest" ]]; then
+  if [[ $force -eq 0 ]]; then
+    echo "destination already exists: $dest" >&2
+    echo "re-run with -f to overwrite" >&2
+    exit 1
+  fi
+  rm -rf "$dest"
+fi
+
+mkdir -p "$repo_root/skills"
+cp -R "$src" "$dest"
+
+echo "promoted $scope skill '$name'"
+echo "  from: $src"
+echo "  to:   $dest"
